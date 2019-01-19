@@ -7,8 +7,8 @@ import wget
 
 class SequenceReadArchive:
     @staticmethod
-    def split(sra_file, out_path):
-        cmd = ["fastq-dump", sra_file, '--gzip', '--outdir', out_path, '--split-files']
+    def split(sra_file, out):
+        cmd = ["fastq-dump", sra_file, '--gzip', '--outdir', out, '--split-files']
         subprocess.call(cmd, stdout=subprocess.DEVNULL)
 
     @staticmethod
@@ -26,7 +26,7 @@ class SequenceReadArchive:
             return False
 
     @staticmethod
-    def download(url, save_path):
-        file_path = wget.download(url=url, out=save_path)
+    def download(url, out):
+        file_path = wget.download(url=url, out=out)
         return file_path
 

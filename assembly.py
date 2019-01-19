@@ -14,20 +14,20 @@ class Assembly:
         return sort_size[0], sort_size[1]
         
     @staticmethod
-    def layoutIsPair(read_1, read_2, out_path):
+    def layoutIsPair(read_1, read_2, out):
         cmd = ["python", "spades.py",
                "-1", read_1,
                "-2", read_2,
                "-t", "8",
-               "-o", out_path,
+               "-o", out,
                "--careful"]
         subprocess.call(cmd, stdout=subprocess.DEVNULL)
 
     @staticmethod
-    def layoutIsSingle(read, out_path):
+    def layoutIsSingle(read, out):
         cmd = ["python", "spades.py",
                "-s", read,
                "-t", "8",
-               "-o", out_path,
+               "-o", out,
                "--careful"]
         subprocess.call(cmd, stdout=subprocess.DEVNULL)
