@@ -1,32 +1,33 @@
-from urllib.request import urlopen
-from urllib.error import URLError
+import os
 import subprocess
-
 import wget
 
 
 class SequenceReadArchive:
-    @staticmethod
-    def split(sra_file, out):
-        cmd = ["fastq-dump", sra_file, '--gzip', '--outdir', out, '--split-files']
-        subprocess.call(cmd, stdout=subprocess.DEVNULL)
+    def __init__(self, accession, out):
+        self.accession = accession
+        self.out = out
+        self.url = None
+        self.sra_file = None
+        self.to_fastq = None
 
-    @staticmethod
-    def getURL(accession):
+    def get_url(self):
         url = 'ftp://ftp.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/{}/{}/{}/{}'.format(
-            accession[0:3], accession[0:6], accession, accession + '.sra')
-        return url
+            self.accession[0:3], self.accession[0:6], self.accession, self.accession + '.sra')
+        self.url = url
 
-    @staticmethod
-    def checkURL(url):
-        try:
-            urlopen(url)
-            return True
-        except URLError:
-            return False
+    def download(self):
+        out = os.path.join(self.out, 'SRA')
+        os.makedirs(out, exist_ok=True)
+        sra_file = wget.download(url=self.url, out=out)
+        self.sra_file = sra_file
 
-    @staticmethod
-    def download(url, out):
-        file_path = wget.download(url=url, out=out)
-        return file_path
+    def split(self):
+        out = os.path.join(self.out, 'FastQC', self.accession)
+        os.makedirs(out)
+        cmd = ["fastq-dump", self.sra_file, '--gzip', '--outdir', out, '--split-files']
+        subprocess.call(cmd, stdout=subprocess.DEVNULL)
+        self.to_fastq = out
 
+    def remove(self):
+        os.remove(self.sra_file)

@@ -1,33 +1,49 @@
-import subprocess
 import os
+import shutil
+import subprocess
+
+
+def SPAdes_cmd(reads, out):
+    if len(reads) == 2:
+        cmd = ["python", "spades.py",
+               "-1", reads[0],
+               "-2", reads[1],
+               "-t", "8",
+               "-o", out,
+               "--careful"]
+    else:
+        cmd = ["python", "spades.py",
+               "-s", reads[0],
+               "-t", "8",
+               "-o", out,
+               "--careful"]
+    return cmd
+
+
+def get_contig(accession, out, assembly_result):
+    out_path = os.path.join(out, 'Contigs', accession)
+    os.makedirs(out_path)
+    shutil.copy(os.path.join(assembly_result, "contigs.fasta"), os.path.join(out_path, accession + ".fa"))
+    return out_path
 
 
 class Assembly:
-    @staticmethod
-    def cleanBarcode(fastq_save_path):
-        size = {}
-        for fastq in os.listdir(fastq_save_path):
-            fastq_file = os.path.join(fastq_save_path, fastq)
-            size[fastq_file] = os.stat(fastq_file).st_size
+    def __init__(self, accession, reads, out):
+        self.accession = accession
+        self.reads = [os.path.join(reads, read) for read in os.listdir(reads)]
+        self.out = os.path.join(out, 'Assembly', self.accession)
+        os.makedirs(self.out)
 
-        sort_size = sorted(size, key=lambda x: size[x], reverse=True)
-        return sort_size[0], sort_size[1]
-        
-    @staticmethod
-    def layoutIsPair(read_1, read_2, out):
-        cmd = ["python", "spades.py",
-               "-1", read_1,
-               "-2", read_2,
-               "-t", "8",
-               "-o", out,
-               "--careful"]
+    def denovo(self):
+        if len(self.reads) > 2:
+            reads = self._clean_barcode()
+            cmd = SPAdes_cmd(reads=reads, out=self.out)
+        else:
+            cmd = SPAdes_cmd(reads=self.reads, out=self.out)
         subprocess.call(cmd, stdout=subprocess.DEVNULL)
+        return self.out
 
-    @staticmethod
-    def layoutIsSingle(read, out):
-        cmd = ["python", "spades.py",
-               "-s", read,
-               "-t", "8",
-               "-o", out,
-               "--careful"]
-        subprocess.call(cmd, stdout=subprocess.DEVNULL)
+    def _clean_barcode(self):
+        reads_size = {read: os.stat(read).st_size for read in self.reads}
+        reads_size_sort = sorted(reads_size, key=lambda x: reads_size[x], reverse=True)
+        return reads_size_sort[0:2]
