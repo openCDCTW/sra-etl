@@ -43,5 +43,5 @@ class Assembly:
         return reads_size_sort[0:2]
 
     def move_cotig(self):
-        shutil.copy(os.path.join(self.assembly_out, "contigs.fasta"),
+        shutil.copy(os.path.join(self.assembly_dir, "contigs.fasta"),
                     os.path.join(self.contig_out, self.accession + ".fa"))
