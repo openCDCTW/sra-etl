@@ -9,7 +9,7 @@ class SequenceReadArchive:
         self.outdir = outdir
         self.url = None
         self.sra_file = None
-        self.to_fastq = None
+        self.fastq_dir = None
 
     def get_url(self):
         url = 'ftp://ftp.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/{}/{}/{}/{}'.format(
