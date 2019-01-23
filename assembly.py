@@ -24,7 +24,7 @@ class Assembly:
     def __init__(self, accession, reads_path, outdir):
         self.accession = accession
         self.reads = [os.path.join(reads_path, read) for read in os.listdir(reads_path)]
-        self.assembly_out = os.path.join(out, 'Assembly', self.accession)
+        self.assembly_dir = os.path.join(outdir, 'Assembly', self.accession)
         self.contig_out = os.path.join(out, 'Contig', self.accession)
         os.makedirs(self.assembly_out)
         os.makedirs(self.contig_out)
