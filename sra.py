@@ -22,7 +22,7 @@ class SequenceReadArchive:
         self.sra_file = wget.download(url=self.url, out=out)
 
     def split(self):
-        out = os.path.join(self.out, 'FastQC', self.accession)
+        out = os.path.join(self.outdir, 'Fastq', self.accession)
         os.makedirs(out)
         cmd = ["fastq-dump", self.sra_file, '--gzip', '--outdir', out, '--split-files']
         subprocess.call(cmd, stdout=subprocess.DEVNULL)
