@@ -20,7 +20,6 @@ class SequenceReadArchive:
         out = os.path.join(self.outdir, 'SRA')
         os.makedirs(out, exist_ok=True)
         self.sra_file = wget.download(url=self.url, out=out)
-        self.sra_file = sra_file
 
     def split(self):
         out = os.path.join(self.out, 'FastQC', self.accession)
