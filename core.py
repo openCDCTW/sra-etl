@@ -19,7 +19,7 @@ def run(sra_list, out, database):
             acc.append(line.strip())
 
     for acc_number in acc:
-        sra = SequenceReadArchive(accession=acc_number, out=out)
+        sra = SequenceReadArchive(accession=acc_number, outdir=out)
         sra.get_url()
         sra.download()
         sra.split()
