@@ -4,7 +4,7 @@ import wget
 
 
 class SequenceReadArchive:
-    def __init__(self, accession, out):
+    def __init__(self, accession, outdir):
         self.accession = accession
         self.out = out
         self.url = None
