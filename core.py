@@ -25,7 +25,7 @@ def run(sra_list, out, database):
         sra.split()
         sra.remove()
 
-        assembly = Assembly(accession=acc_number, reads=sra.to_fastq, out=out)
+        assembly = Assembly(accession=acc_number, reads=sra.fastq_dir, outdir=out)
         assembly.denovo()
         assembly.move_cotig()
 
