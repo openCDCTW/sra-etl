@@ -21,7 +21,7 @@ def spades_cmd(reads, out):
 
 
 class Assembly:
-    def __init__(self, accession, reads, out):
+    def __init__(self, accession, reads_path, outdir):
         self.accession = accession
         self.reads = [os.path.join(reads, read) for read in os.listdir(reads)]
         self.out = out
