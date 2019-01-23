@@ -32,7 +32,7 @@ class Assembly:
     def denovo(self):
         if len(self.reads) > 2:
             reads = self._clean_barcode()
-            cmd = SPAdes_cmd(reads=reads, out=self.assembly_out)
+            cmd = spades_cmd(reads=reads, out=self.assembly_dir)
         else:
             cmd = SPAdes_cmd(reads=self.reads, out=self.assembly_out)
         subprocess.call(cmd, stdout=subprocess.DEVNULL)
