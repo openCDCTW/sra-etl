@@ -26,7 +26,7 @@ class Assembly:
         self.reads = [os.path.join(reads_path, read) for read in os.listdir(reads_path)]
         self.assembly_dir = os.path.join(outdir, 'Assembly', self.accession)
         self.contig_out = os.path.join(outdir, 'Contig', self.accession)
-        os.makedirs(self.assembly_out)
+        os.makedirs(self.assembly_dir)
         os.makedirs(self.contig_out)
 
     def denovo(self):
