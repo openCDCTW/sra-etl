@@ -20,30 +20,29 @@ def SPAdes_cmd(reads, out):
     return cmd
 
 
-def get_contig(accession, out, assembly_result):
-    out_path = os.path.join(out, 'Contigs', accession)
-    os.makedirs(out_path)
-    shutil.copy(os.path.join(assembly_result, "contigs.fasta"), os.path.join(out_path, accession + ".fa"))
-    return out_path
-
-
 class Assembly:
     def __init__(self, accession, reads, out):
         self.accession = accession
         self.reads = [os.path.join(reads, read) for read in os.listdir(reads)]
-        self.out = os.path.join(out, 'Assembly', self.accession)
-        os.makedirs(self.out)
+        self.out = out
+        self.assembly_out = os.path.join(out, 'Assembly', self.accession)
+        self.contig_out = os.path.join(out, 'Contig', self.accession)
+        os.makedirs(self.assembly_out)
+        os.makedirs(self.contig_out)
 
     def denovo(self):
         if len(self.reads) > 2:
             reads = self._clean_barcode()
-            cmd = SPAdes_cmd(reads=reads, out=self.out)
+            cmd = SPAdes_cmd(reads=reads, out=self.assembly_out)
         else:
-            cmd = SPAdes_cmd(reads=self.reads, out=self.out)
+            cmd = SPAdes_cmd(reads=self.reads, out=self.assembly_out)
         subprocess.call(cmd, stdout=subprocess.DEVNULL)
-        return self.out
 
     def _clean_barcode(self):
         reads_size = {read: os.stat(read).st_size for read in self.reads}
         reads_size_sort = sorted(reads_size, key=lambda x: reads_size[x], reverse=True)
         return reads_size_sort[0:2]
+
+    def move_cotig(self):
+        shutil.copy(os.path.join(self.assembly_out, "contigs.fasta"),
+                    os.path.join(self.contig_out, self.accession + ".fa"))

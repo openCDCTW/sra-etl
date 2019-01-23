@@ -2,7 +2,7 @@ import sys
 import os
 import shutil
 import click
-from assembly import Assembly, get_contig
+from assembly import Assembly
 from sra import SequenceReadArchive
 sys.path.append('Benga')
 from src.algorithms import profiling
@@ -26,15 +26,14 @@ def run(sra_list, out, database):
         sra.remove()
 
         assembly = Assembly(accession=acc_number, reads=sra.to_fastq, out=out)
-        assembly_result = assembly.denovo()
-
-        contig = get_contig(accession=acc_number, out=out, assembly_result=assembly_result)
+        assembly.denovo()
+        assembly.move_cotig()
 
         profile = os.path.join(out, 'Profile', acc_number)
         os.makedirs(profile, exist_ok=True)
 
-        profiling.profiling(profile, contig, database, threads=1, occr_level=95,
+        profiling.profiling(profile, assembly.contig_out, database, threads=1, occr_level=95,
                             enable_adding_new_alleles=True, generate_profiles=True, debug=False)
 
         shutil.rmtree(sra.to_fastq)
-        shutil.rmtree(assembly_result)
+        shutil.rmtree(assembly.out)
