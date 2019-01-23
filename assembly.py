@@ -34,7 +34,7 @@ class Assembly:
             reads = self._clean_barcode()
             cmd = spades_cmd(reads=reads, out=self.assembly_dir)
         else:
-            cmd = SPAdes_cmd(reads=self.reads, out=self.assembly_out)
+            cmd = spades_cmd(reads=self.reads, out=self.assembly_dir)
         subprocess.call(cmd, stdout=subprocess.DEVNULL)
 
     def _clean_barcode(self):
