@@ -6,7 +6,7 @@ import wget
 class SequenceReadArchive:
     def __init__(self, accession, outdir):
         self.accession = accession
-        self.out = out
+        self.outdir = outdir
         self.url = None
         self.sra_file = None
         self.to_fastq = None
