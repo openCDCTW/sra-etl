@@ -27,7 +27,7 @@ class SequenceReadArchive:
         os.makedirs(out)
         cmd = ["fastq-dump", self.sra_file, '--gzip', '--outdir', out, '--split-files']
         subprocess.call(cmd, stdout=subprocess.DEVNULL)
-        self.to_fastq = out
+        self.fastq_dir = out
 
     def remove(self):
         os.remove(self.sra_file)
