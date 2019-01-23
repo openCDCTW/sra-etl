@@ -3,7 +3,7 @@ import shutil
 import subprocess
 
 
-def SPAdes_cmd(reads, out):
+def spades_cmd(reads, out):
     if len(reads) == 2:
         cmd = ["python", "spades.py",
                "-1", reads[0],
