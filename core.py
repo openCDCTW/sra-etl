@@ -35,5 +35,5 @@ def run(sra_list, out, database):
         profiling.profiling(profile, assembly.contig_out, database, threads=1, occr_level=95,
                             enable_adding_new_alleles=True, generate_profiles=True, debug=False)
 
-        shutil.rmtree(sra.to_fastq)
+        shutil.rmtree(sra.fastq_dir)
         shutil.rmtree(assembly.out)
