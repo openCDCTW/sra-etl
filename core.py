@@ -15,9 +15,9 @@ from src.algorithms import profiling
 def main(accession, out, database):
     sra = SequenceReadArchive(accession=accession, outdir=out)
     sra.make_url()
-    # sra.download()
+    sra.download()
     sra.split()
-    # sra.remove()
+    sra.remove()
 
     assembly = Assembly(accession=accession, reads_path=sra.fastq_dir, outdir=out)
     assembly.denovo()
