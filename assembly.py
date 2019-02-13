@@ -5,14 +5,14 @@ import subprocess
 
 def spades_cmd(reads, out):
     if len(reads) == 2:
-        cmd = ["python", "spades.py",
+        cmd = ["spades.py",
                "-1", reads[0],
                "-2", reads[1],
                "-t", "8",
                "-o", out,
                "--careful"]
     else:
-        cmd = ["python", "spades.py",
+        cmd = ["spades.py",
                "-s", reads[0],
                "-t", "8",
                "-o", out,
@@ -42,6 +42,6 @@ class Assembly:
         reads_size_sort = sorted(reads_size, key=lambda x: reads_size[x], reverse=True)
         return reads_size_sort[0:2]
 
-    def move_cotig(self):
-        shutil.copy(os.path.join(self.assembly_dir, "contigs.fasta"),
-                    os.path.join(self.contig_out, self.accession + ".fa"))
+    def move_contig(self):
+        contig_file = os.path.join(self.assembly_dir, "contigs.fasta")
+        shutil.copy(contig_file, os.path.join(self.contig_out, self.accession + ".fa"))

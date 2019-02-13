@@ -1,15 +1,16 @@
 import os
 import subprocess
-import wget
 
 
 class SequenceReadArchive:
     def __init__(self, accession, outdir):
         self.accession = accession
-        self.outdir = outdir
+        self.outdir = os.path.join(outdir, 'SRA')
         self.url = None
-        self.sra_file = None
-        self.fastq_dir = None
+        self.sra_file = os.path.join(self.outdir, self.accession + '.sra')
+        self.fastq_dir = os.path.join(outdir, 'Fastq', self.accession)
+        os.makedirs(self.outdir, exist_ok=True)
+        os.makedirs(self.fastq_dir)
 
     def make_url(self):
         url = 'ftp://ftp.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/{}/{}/{}/{}'.format(
@@ -17,16 +18,11 @@ class SequenceReadArchive:
         self.url = url
 
     def download(self):
-        out = os.path.join(self.outdir, 'SRA')
-        os.makedirs(out, exist_ok=True)
-        self.sra_file = wget.download(url=self.url, out=out)
+        subprocess.call(['wget', self.url, '-O', self.sra_file], stdout=subprocess.DEVNULL)
 
     def split(self):
-        out = os.path.join(self.outdir, 'Fastq', self.accession)
-        os.makedirs(out)
-        cmd = ["fastq-dump", self.sra_file, '--gzip', '--outdir', out, '--split-files']
+        cmd = ["fastq-dump", self.sra_file, '--gzip', '--outdir', self.fastq_dir, '--split-files']
         subprocess.call(cmd, stdout=subprocess.DEVNULL)
-        self.fastq_dir = out
 
     def remove(self):
         os.remove(self.sra_file)

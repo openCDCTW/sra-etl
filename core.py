@@ -4,36 +4,40 @@ import shutil
 import click
 from assembly import Assembly
 from sra import SequenceReadArchive
-sys.path.append('Benga')
+sys.path.append('/home/chen1i6c04/Projects/Benga')
 from src.algorithms import profiling
 
 
 @click.command()
-@click.argument('sra_list', type=click.Path(exists=True))
+@click.argument('accession', type=click.STRING)
 @click.argument('out', type=click.Path(exists=True))
-@click.argument('database')
-def run(sra_list, out, database):
-    acc = []
-    with open(sra_list) as lines:
-        for line in lines:
-            acc.append(line.strip())
+@click.option('--database', default=False)
+def main(accession, out, database):
+    sra = SequenceReadArchive(accession=accession, outdir=out)
+    sra.make_url()
+    # sra.download()
+    sra.split()
+    # sra.remove()
 
-    for acc_number in acc:
-        sra = SequenceReadArchive(accession=acc_number, outdir=out)
-        sra.make_url()
-        sra.download()
-        sra.split()
-        sra.remove()
-
-        assembly = Assembly(accession=acc_number, reads=sra.fastq_dir, outdir=out)
-        assembly.denovo()
-        assembly.move_cotig()
-
-        profile = os.path.join(out, 'Profile', acc_number)
+    assembly = Assembly(accession=accession, reads_path=sra.fastq_dir, outdir=out)
+    assembly.denovo()
+    shutil.rmtree(sra.fastq_dir)
+    if database:
+        profile = os.path.join(out, 'Profile', accession)
         os.makedirs(profile, exist_ok=True)
+        try:
+            assembly.move_contig()
+            profiling.profiling(profile, assembly.contig_out, database, threads=1, occr_level=0,
+                                enable_adding_new_alleles=True, generate_profiles=True, debug=False)
+        except FileNotFoundError:
+            pass
+    else:
+        try:
+            assembly.move_contig()
+        except FileNotFoundError:
+            pass
+    shutil.rmtree(assembly.assembly_dir)
 
-        profiling.profiling(profile, assembly.contig_out, database, threads=1, occr_level=95,
-                            enable_adding_new_alleles=True, generate_profiles=True, debug=False)
 
-        shutil.rmtree(sra.fastq_dir)
-        shutil.rmtree(assembly.out)
+if __name__ == '__main__':
+    main()
