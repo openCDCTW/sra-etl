@@ -18,10 +18,10 @@ class SequenceReadArchive:
         self.url = url
 
     def download(self):
-        subprocess.call(['wget', self.url, '-O', self.sra_file], stdout=subprocess.DEVNULL)
+        subprocess.call(['wget', self.url, '-O', self.sra_file], stderr=subprocess.DEVNULL)
 
     def split(self):
-        cmd = ["fastq-dump", self.sra_file, '--gzip', '--outdir', self.fastq_dir, '--split-files']
+        cmd = ["fastq-dump", self.sra_file, '--outdir', self.fastq_dir, '--split-files', '--gzip']
         subprocess.call(cmd, stdout=subprocess.DEVNULL)
 
     def remove(self):

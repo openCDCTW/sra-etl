@@ -5,18 +5,22 @@ import subprocess
 
 def spades_cmd(reads, out):
     if len(reads) == 2:
-        cmd = ["spades.py",
-               "-1", reads[0],
-               "-2", reads[1],
-               "-t", "8",
-               "-o", out,
-               "--careful"]
+        cmd = [
+            "spades.py",
+            "-1", reads[0],
+            "-2", reads[1],
+            "-t", "8",
+            "-o", out,
+            "--careful",
+        ]
     else:
-        cmd = ["spades.py",
-               "-s", reads[0],
-               "-t", "8",
-               "-o", out,
-               "--careful"]
+        cmd = [
+            "spades.py",
+            "-s", reads[0],
+            "-t", "8",
+            "-o", out,
+            "--careful",
+        ]
     return cmd
 
 
