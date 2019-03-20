@@ -48,4 +48,5 @@ class Assembly:
 
     def move_contig(self):
         contig_file = os.path.join(self.assembly_dir, "contigs.fasta")
-        shutil.copy(contig_file, os.path.join(self.contig_out, self.accession + ".fa"))
+        outdir = os.path.join(self.contig_out, self.accession + ".fa")
+        shutil.copy(contig_file, outdir)

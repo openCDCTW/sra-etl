@@ -10,7 +10,7 @@ class SequenceReadArchive:
         self.sra_file = os.path.join(self.outdir, self.accession + '.sra')
         self.fastq_dir = os.path.join(outdir, 'Fastq', self.accession)
         os.makedirs(self.outdir, exist_ok=True)
-        os.makedirs(self.fastq_dir)
+        os.makedirs(self.fastq_dir, exist_ok=True)
 
     def make_url(self):
         url = 'ftp://ftp.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByRun/sra/{}/{}/{}/{}'.format(
