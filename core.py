@@ -1,4 +1,3 @@
-import os
 import sys
 import shutil
 import configparser
@@ -9,12 +8,15 @@ from sra import SequenceReadArchive
 
 config = configparser.ConfigParser()
 config.read('config.txt')
-profiling_program = config.get('PROFILING', 'Program')
+profiling_program = config['Config']['profiling']
+celery_backend = config['Config']['backend']
+celery_broker = config['Config']['broker']
+
 sys.path.append(profiling_program)
 from src.algorithms import profiling
 
 
-app = Celery(backend='redis://', broker="amqp://guest:guest@127.0.0.1:5672")
+app = Celery(backend=celery_backend, broker=celery_broker)
 
 
 @app.task
@@ -38,14 +40,14 @@ def genome_assembly(args):
     assembly.move_contig(contig_dir)
     shutil.rmtree(fastq_dir)
     shutil.rmtree(assembly.outdir)
-    return contig_dir, outdir
+    return accession, contig_dir, outdir
 
 
 @app.task
 def profile(args, database):
-    contig_dir, outdir = args
-    accession = os.path.basename(contig_dir)
-    os.makedirs(os.path.join(outdir, 'Profile', accession))
-    profiling.profiling(os.path.join(outdir, 'Profile', accession), contig_dir, database, threads=1, occr_level=0,
+    accession, contig_dir, outdir = args
+    profile_dir = Path(outdir, 'profile', accession)
+    Path.mkdir(profile_dir, parents=True, exist_ok=True)
+    profiling.profiling(profile_dir, contig_dir, database, threads=1, occr_level=0,
                         enable_adding_new_alleles=True, generate_profiles=True, debug=False)
 
