@@ -1,34 +1,44 @@
-import sys
 import os
+import sys
 import shutil
+import configparser
+from pathlib import Path
 from celery import Celery
 from assembly import Assembly
 from sra import SequenceReadArchive
-sys.path.append('/home/chen1i6c04/Projects/Benga')
+
+config = configparser.ConfigParser()
+config.read('config.txt')
+profiling_program = config.get('PROFILING', 'Program')
+sys.path.append(profiling_program)
 from src.algorithms import profiling
+
 
 app = Celery(backend='redis://', broker="amqp://guest:guest@127.0.0.1:5672")
 
 
 @app.task
 def sra_download_and_split(accession, outdir):
-    sra = SequenceReadArchive(accession=accession, outdir=outdir)
+    sra_outdir = Path(outdir, 'sra')
+    fastq_dir = Path(outdir, 'fastq', accession)
+    sra = SequenceReadArchive(accession=accession, outdir=sra_outdir)
     sra.make_url()
     sra.download()
-    sra.split()
+    sra.split(fastq_dir)
     sra.remove()
-    return accession, sra.fastq_dir, outdir
+    return accession, fastq_dir, outdir
 
 
 @app.task
 def genome_assembly(args):
     accession, fastq_dir, outdir = args
+    contig_dir = Path(outdir, 'contig', accession)
     assembly = Assembly(accession=accession, reads_path=fastq_dir, outdir=outdir)
     assembly.denovo()
-    assembly.move_contig()
+    assembly.move_contig(contig_dir)
     shutil.rmtree(fastq_dir)
-    shutil.rmtree(assembly.assembly_dir)
-    return assembly.contig_out, outdir
+    shutil.rmtree(assembly.outdir)
+    return contig_dir, outdir
 
 
 @app.task
